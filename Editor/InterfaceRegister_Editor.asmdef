@@ -2,7 +2,7 @@
     "name": "InterfaceRegister_Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:876f59d4bb3ae9543b6a05bfce201ee6"
+        "GUID:1c92a09be7c3d3b4ba02ee5bbbf28cfe"
     ],
     "includePlatforms": [
         "Editor"
