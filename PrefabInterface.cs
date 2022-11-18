@@ -36,8 +36,6 @@ public class PrefabInterface<T>:ISerializationCallbackReceiver where T:class
 
     private void Check()
     {
-        Debug.Log("‚¿‚¥‚Á‚­");
-
         if (typeName != typeof(T).ToString())
         {
             scriptableObject = null;
