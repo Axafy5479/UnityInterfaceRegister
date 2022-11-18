@@ -1,18 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 
-[CustomPropertyDrawer(typeof(PrefabInterface<>))]
+[CustomPropertyDrawer(typeof(InterfaceRegister<>))]
 public class InterfaceRegistingEditor : PropertyDrawer
 {
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 	{
 
 		//このスクリプトが監視する変数
-		var targetProp = property.FindPropertyRelative("scriptableObject");
+		var targetProp = property.FindPropertyRelative("go");
 
 		string targetTypeName = property.FindPropertyRelative("typeName").stringValue;
 
@@ -20,23 +21,26 @@ public class InterfaceRegistingEditor : PropertyDrawer
 
 
 		//以前登録されていたゲームオブジェクト & 現在登録されているゲームオブジェクト
-		var oldObject = (ScriptableObject)targetProp.objectReferenceValue;
-		var newObject = (ScriptableObject)EditorGUI.ObjectField(position, label, oldObject, typeof(ScriptableObject),false);
+		var oldObject = (GameObject)targetProp.objectReferenceValue;
+		var newObject = (GameObject)EditorGUI.ObjectField(position, label, oldObject, typeof(GameObject),true);
 
 
 
 
 		//現在登録されているシーンがnullである場合、シーン名として "" を登録
-		if (newObject == null) targetProp.objectReferenceValue = null;
+		if (newObject == null)
+		{
+			targetProp.objectReferenceValue = null;
+		}
 		else if (newObject != oldObject)
 		{
 			//newSceneがnullではなく、かつ
 			//以前のものと現在のものが異なる場合
 			//つまり、別のSceneAssetに置き換えられた場合
 
-			//ドロップされたScriptableObjectがインターフェースを持っているか確認
-			bool existsInBuildSettings = newObject.GetType().GetInterface(targetTypeName) !=null;
-			
+			//ドロップされたGameObjectがインターフェースを持っているか確認
+			bool existsInBuildSettings = newObject.GetComponents<MonoBehaviour>().Any(mono => mono.GetType().GetInterface(targetTypeName) != null);
+
 			//持っている場合更新
 			if (existsInBuildSettings) targetProp.objectReferenceValue = newObject;
 			else

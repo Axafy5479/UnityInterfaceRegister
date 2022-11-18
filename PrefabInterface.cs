@@ -4,24 +4,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class PrefabInterface<T>:ISerializationCallbackReceiver where T:class
+public class InterfaceRegister<T>:ISerializationCallbackReceiver where T:class
 {
-
-    [SerializeField] private ScriptableObject scriptableObject;
+    [SerializeField] private GameObject go;
     [SerializeField] private string typeName;
+    private T Instance { get; set; }
 
-    public static implicit operator T(PrefabInterface<T> scriptableObject) => scriptableObject;
+    public static implicit operator T(InterfaceRegister<T> obj) => obj.GetInterface();
 
     public T GetInterface()
     {
-        if (scriptableObject is T)
+        if(Instance == null)
         {
-            return scriptableObject as T;
+            Instance = go.GetComponent<T>();
         }
-        else
-        {
-            return null;
-        }
+        return Instance;
     }
 
     public void OnBeforeSerialize()
@@ -38,7 +35,7 @@ public class PrefabInterface<T>:ISerializationCallbackReceiver where T:class
     {
         if (typeName != typeof(T).ToString())
         {
-            scriptableObject = null;
+            go = null;
             typeName = typeof(T).ToString();
         }
     }
